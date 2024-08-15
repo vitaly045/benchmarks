@@ -3,7 +3,7 @@ use rand::Rng;
 use std::time::Instant;
 
 const CAPACITY:usize = 1_000_000;
-const MAX_NUMBER:i32 = 100_000;
+const MAX_NUMBER:i32 = 1_000_000;
 const EXPERIMENTS:usize = 1000;
 
 struct TestData {
@@ -35,16 +35,17 @@ fn test_run(test: &TestData) {
 }
 
 fn main() {
-    let mut average = 0.0;
+    let mut best = std::u128::MAX;
 
     for _i in 0..EXPERIMENTS {
         let test = test_init();
         let start = Instant::now();
         test_run(&test);
-        let duration = start.elapsed();
+        let current = start.elapsed().as_nanos();
 
-        average += (duration.as_millis() as f64) / (EXPERIMENTS as f64); 
+        if current < best {
+            best = current;
+            println!("{:?}", (best as f64) / 1000000.0);
+        }
     }
-
-    println!("[Rust] Average time: {:?}", average);
 }

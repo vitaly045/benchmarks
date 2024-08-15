@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Random;
 
 public class Main {
-    private static final int experiments = 5000;
+    private static final int experiments = 1000;
     private static final int capacity = 1000000;
-    private static final int maxNumber = 100000;
+    private static final int maxNumber = 1000000;
 
     static class TestData {
         int[] data;
@@ -42,17 +42,16 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        double average = 0.0;
+        double best = Double.MAX_VALUE;
 
         for (int i = 0; i < experiments; i++) {
             TestData data = testInit();
-            long start = System.currentTimeMillis();
+            long start = System.nanoTime();
             testRun(data);
-            long end = System.currentTimeMillis();
+            long end = System.nanoTime();
 
-            average += (double)(end - start) / experiments;
+            best = Math.min(best, (double)(end - start) / 1E6);
+            System.out.print("\r" + best);
         }
-
-        System.out.println("[Java] Average time: " + average);
     }
 }

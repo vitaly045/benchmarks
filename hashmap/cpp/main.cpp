@@ -9,7 +9,7 @@ using namespace std;
 
 const int experiments = 1000;
 const int capacity = 1000000;
-const int maxNumber = 100000;
+const int maxNumber = 1000000;
 
 struct TestData {
     int32_t* data;
@@ -49,21 +49,22 @@ void testCleanup(const TestData& test) {
 }
 
 int main() {
-    double average = 0.0;
+    double best = INT64_MAX;
 
     for (size_t i = 0; i < experiments; i++) {
         TestData data = testInit();
         auto start_time = chrono::high_resolution_clock::now();
         testRun(data);
         auto end_time = chrono::high_resolution_clock::now();
-        auto time = (end_time - start_time) / chrono::milliseconds(1);
+        auto time = (end_time - start_time) / chrono::nanoseconds(1);
 
-        average += ((double)time) / experiments;
+        if (time < best) {
+            best = time;
+            cout << "\r" << best / 1e6 << "ms";
+        }
 
         testCleanup(data);
     }
-
-    cout << "[C++] Average time: " << average << endl;
 
     return 0;
 }

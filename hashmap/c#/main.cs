@@ -10,7 +10,7 @@ namespace main {
 
     class Program {
         static int capacity = 1_000_000;
-        static int maxNumber = 100_000;
+        static int maxNumber = 1_000_000;
         static int experiments = 1000;
 
         static TestData testInit() {
@@ -41,7 +41,7 @@ namespace main {
         }
 
         static void RunExperiments() {
-            double average = 0.0;
+            TimeSpan best = TimeSpan.MaxValue;
 
             for (int i = 0; i < experiments; i++) {
                 TestData testData = testInit();
@@ -50,10 +50,11 @@ namespace main {
                 testRun(testData);
                 watch.Stop();
 
-                average += ((double)watch.ElapsedMilliseconds) / experiments;
+                if (watch.Elapsed.CompareTo(best) < 0) {
+                    best = watch.Elapsed;
+                    Console.Write("\r" + best);
+                }
             }
-
-            Console.WriteLine("[C#] Average time: " + average);
         }
 
         public static void Main() {
