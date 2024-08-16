@@ -34,7 +34,7 @@ public class Main {
         for (int i = 0; i < test.data.length; i++) {
             int searchFor = test.target - test.data[i];
             if (seen.containsKey(searchFor)) {
-                throw new RuntimeException("This should not happen");
+                throw new RuntimeException("Found 2 numbers which add up to a target");
             }
 
             seen.put(test.data[i], true);

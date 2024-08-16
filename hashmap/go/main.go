@@ -9,7 +9,7 @@ import (
 
 const experiments = 1_000
 const capacity = 1_000_000
-const maxNumber = 1_000_000
+const maxNumber = 1_000
 
 type TestData struct {
 	data   []int32
@@ -29,8 +29,8 @@ func testRun(test TestData) {
 	length := len(test.data)
 	for i := 0; i < length; i++ {
 		searchFor := test.target - test.data[i]
-		if seen[searchFor] {
-			panic("This should not happen")
+		if _, contains := seen[searchFor]; contains {
+			panic("Found 2 numbers which add up to a target")
 		}
 		seen[test.data[i]] = true
 	}

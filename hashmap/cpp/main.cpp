@@ -12,40 +12,35 @@ const int capacity = 1000000;
 const int maxNumber = 1000000;
 
 struct TestData {
-    int32_t* data;
-    int32_t target;
+    vector<int> data;
+    int target;
 };
 
 TestData testInit() {
     TestData test = TestData();
     std::default_random_engine generator;
-    std::uniform_int_distribution<int32_t> distribution(0,maxNumber);
+    std::uniform_int_distribution<int> distribution(0,maxNumber);
 
-    test.data = new int32_t[capacity];
     test.target = 2 * maxNumber + 1;
 
     for (size_t i = 0; i < capacity; i++) {
-        test.data[i] = distribution(generator);
+        test.data.push_back(distribution(generator));
     }
     
     return test;
 }
 
 void testRun(const TestData& test) {
-    unordered_map<int32_t, bool> seen;
+    unordered_map<int, bool> seen;
 
     for (size_t i = 0; i < capacity; i++) {
-        int32_t searchFor = test.target - test.data[i];
-        if (seen[searchFor]) {
-            throw std::runtime_error("This should not happen");
+        int searchFor = test.target - test.data[i];
+        if (seen.find(searchFor) != seen.end()) {
+            throw std::runtime_error("Found two numbers add up to a target");
         }
 
         seen[test.data[i]] = true;
     }
-}
-
-void testCleanup(const TestData& test) {
-    delete[] test.data;
 }
 
 int main() {
@@ -62,8 +57,6 @@ int main() {
             best = time;
             cout << "\r" << best / 1e6 << "ms";
         }
-
-        testCleanup(data);
     }
 
     return 0;

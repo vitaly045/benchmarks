@@ -1,0 +1,7 @@
+*.sln
+**/*.exe
+**/obj/*
+**/bin/*
+**/target/*
+Cargo.lock
+settings.json
