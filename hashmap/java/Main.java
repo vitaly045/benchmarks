@@ -1,13 +1,13 @@
 package hashmap.java;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Main {
     private static final int experiments = 1000;
     private static final int capacity = 1000000;
-    private static final int maxNumber = 1000000;
+    private static final int maxNumber = 10000000;
 
     static class TestData {
         int[] data;
@@ -28,17 +28,19 @@ public class Main {
         return test;
     }
 
-    private static void testRun(TestData test) {
-        Map<Integer, Boolean> seen = new HashMap<>();
+    private static int testRun(TestData test) {
+        Set<Integer> seen = new HashSet<>();
 
         for (int i = 0; i < test.data.length; i++) {
             int searchFor = test.target - test.data[i];
-            if (seen.containsKey(searchFor)) {
+            if (seen.contains(searchFor)) {
                 throw new RuntimeException("Found 2 numbers which add up to a target");
             }
 
-            seen.put(test.data[i], true);
+            seen.add(test.data[i]);
         }
+
+        return seen.size();
     }
 
     public static void main(String[] args) {
@@ -47,11 +49,14 @@ public class Main {
         for (int i = 0; i < experiments; i++) {
             TestData data = testInit();
             long start = System.nanoTime();
-            testRun(data);
+            int countDistinct = testRun(data);
             long end = System.nanoTime();
 
-            best = Math.min(best, (double)(end - start) / 1E6);
-            System.out.print("\r" + best);
+            double current = (double)(end - start) / 1E6;
+            if (current < best) {
+                best = current;
+                System.out.println(best + "ms" + ", distinct = " + countDistinct);
+            }
         }
     }
 }

@@ -9,15 +9,16 @@ namespace main {
     }
 
     class Program {
-        static int capacity = 1_000_000;
-        static int maxNumber = 1_000_000;
-        static int experiments = 1000;
+        static readonly int capacity = 1_000_000;
+        static readonly int maxNumber = 10_000_000;
+        static readonly int experiments = 1000;
 
-        static TestData testInit() {
+        static TestData TestInit() {
             var rand = new Random();
-            var test = new TestData();
-            test.data = new int[capacity];
-            test.target = 2 * maxNumber + 1;
+            var test = new TestData {
+                data = new int[capacity],
+                target = 2 * maxNumber + 1
+            };
 
             for (int i = 0; i < capacity; i++) {
                 test.data[i] = rand.Next(maxNumber);
@@ -26,39 +27,37 @@ namespace main {
             return test;
         }
 
-        static void testRun(TestData test) {
-            Dictionary<int, bool> seen = new Dictionary<int, bool>();
+        static int TestRun(TestData test) {
+            HashSet<int> seen = [];
 
             for (int i = 0; i < test.data.Length; i++) {
                 int searchFor = test.target - test.data[i];
 
-                if (seen.ContainsKey(searchFor)) {
-                    throw new Exception("This should not happen");
+                if (seen.Contains(searchFor)) {
+                    throw new Exception("Found two numbers add up to a target value");
                 }
 
-                seen[test.data[i]] = true;
+                seen.Add(test.data[i]);
             }
+
+            return seen.Count;
         }
 
-        static void RunExperiments() {
+        public static void Main() {
             TimeSpan best = TimeSpan.MaxValue;
 
             for (int i = 0; i < experiments; i++) {
-                TestData testData = testInit();
+                TestData testData = TestInit();
 
                 var watch = Stopwatch.StartNew();
-                testRun(testData);
+                var countDistict = TestRun(testData);
                 watch.Stop();
 
                 if (watch.Elapsed.CompareTo(best) < 0) {
                     best = watch.Elapsed;
-                    Console.Write("\r" + best);
+                    Console.WriteLine((best.TotalMicroseconds / 1000.0).ToString("0.00") + "ms" + ", distinct = " + countDistict);
                 }
             }
-        }
-
-        public static void Main() {
-            RunExperiments();
         }
     }
 }

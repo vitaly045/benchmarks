@@ -2,36 +2,34 @@
 #include <iostream>
 #include <random>
 #include <climits>
-#include <unordered_map>
-#include <functional>
-
-using namespace std;
+#include <unordered_set>
 
 const int experiments = 1000;
 const int capacity = 1000000;
-const int maxNumber = 1000000;
+const int maxNumber = 10000000;
 
 struct TestData {
-    vector<int> data;
+    int* data;
     int target;
 };
 
 TestData testInit() {
     TestData test = TestData();
-    std::default_random_engine generator;
+    std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> distribution(0,maxNumber);
 
     test.target = 2 * maxNumber + 1;
+    test.data = new int[capacity];
 
     for (size_t i = 0; i < capacity; i++) {
-        test.data.push_back(distribution(generator));
+        test.data[i] = distribution(generator);
     }
-    
+
     return test;
 }
 
-void testRun(const TestData& test) {
-    unordered_map<int, bool> seen;
+int testRun(const TestData& test) {
+    std::unordered_set<int> seen;
 
     for (size_t i = 0; i < capacity; i++) {
         int searchFor = test.target - test.data[i];
@@ -39,24 +37,33 @@ void testRun(const TestData& test) {
             throw std::runtime_error("Found two numbers add up to a target");
         }
 
-        seen[test.data[i]] = true;
+        seen.insert(test.data[i]);
     }
+
+    return seen.size();
+}
+
+void testCleanup(const TestData& test) {
+    delete[] test.data;
 }
 
 int main() {
     double best = INT64_MAX;
 
     for (size_t i = 0; i < experiments; i++) {
-        TestData data = testInit();
-        auto start_time = chrono::high_resolution_clock::now();
-        testRun(data);
-        auto end_time = chrono::high_resolution_clock::now();
-        auto time = (end_time - start_time) / chrono::nanoseconds(1);
+        TestData test = testInit();
 
-        if (time < best) {
-            best = time;
-            cout << "\r" << best / 1e6 << "ms";
+        auto start_time = std::chrono::high_resolution_clock::now();
+        auto count_distinct = testRun(test);
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto current = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+
+        if (current < best) {
+            best = current;
+            std::cout << best / 1e6 << "ms" << ", distinct = " << count_distinct << std::endl;
         }
+
+        testCleanup(test);
     }
 
     return 0;

@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::collections::HashSet;
 use rand::Rng;
 use std::time::Instant;
 
 const CAPACITY:usize = 1_000_000;
-const MAX_NUMBER:i32 = 1_000_000;
+const MAX_NUMBER:i32 = 10_000_000;
 const EXPERIMENTS:usize = 1000;
 
 struct TestData {
@@ -20,18 +20,20 @@ fn test_init() -> TestData {
     TestData{ data: data, target: 2*MAX_NUMBER + 1}
 }
 
-fn test_run(test: &TestData) {
-    let mut map = HashMap::new();
+fn test_run(test: &TestData) -> usize {
+    let mut seen = HashSet::new();
     
     for num in &test.data {
         let search_for = test.target - num;
 
-        if map.contains_key(&search_for) {
-            panic!("Found 2 numbers which add up to a target");
+        if seen.contains(&search_for) {
+            panic!("Found two numbers which add up to a target");
         }
-        
-        map.insert(num, true);
+
+        seen.insert(num);
     }
+
+    seen.len()
 }
 
 fn main() {
@@ -40,12 +42,12 @@ fn main() {
     for _i in 0..EXPERIMENTS {
         let test = test_init();
         let start = Instant::now();
-        test_run(&test);
+        let distinct = test_run(&test);
         let current = start.elapsed().as_nanos();
 
         if current < best {
             best = current;
-            println!("{:?}", (best as f64) / 1000000.0);
+            println!("{:?}ms, distinct = {:?}", (best as f64) / 1000000.0, distinct);
         }
     }
 }

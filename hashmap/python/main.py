@@ -16,14 +16,14 @@ def test_init():
     return test
 
 def test_run(test):
-    seen = {}
+    seen = set()
 
     for value in test.data:
         search_for = test.target - value
         if search_for in seen:
             raise RuntimeError("Found 2 numbers which add up to a target")
         
-        seen[value] = True
+        seen.add(value)
 
 def main():
     best = float('inf')
@@ -33,9 +33,11 @@ def main():
         start = time.time()
         test_run(data)
         end = time.time()
+        current = (end - start) * 1E3
 
-        best = min(best, (end - start) * 1E3)
-        print(f"\r{best:.6f}", end="")
+        if current < best:
+            best = current
+            print(f"{best:.2f}ms")
 
 if __name__ == "__main__":
     main()

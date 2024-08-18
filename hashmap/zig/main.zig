@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const capacity = 1_000_000;
-const maxNumber = 1_000;
+const maxNumber = 10_000_000;
 const experiments = 1_000;
 
 const TestData = struct {
@@ -25,7 +25,7 @@ fn testInit(allocator: *std.mem.Allocator) !TestData {
     return testData;
 }
 
-fn testRun(testData: TestData) !void {
+fn testRun(testData: TestData) !u32 {
     var seen = std.AutoHashMap(u32, bool).init(std.heap.page_allocator);
 
     defer seen.deinit();
@@ -38,6 +38,8 @@ fn testRun(testData: TestData) !void {
 
         try seen.put(value, true);
     }
+
+    return seen.count();
 }
 
 pub fn main() !void {
@@ -48,13 +50,15 @@ pub fn main() !void {
         const data = testInit(&allocator) catch unreachable;
 
         const start = std.time.nanoTimestamp();
-        try testRun(data);
+        const distinct = try testRun(data);
         const end = std.time.nanoTimestamp();
 
-        const duration = @as(f128, @floatFromInt(end - start)) / 1e6;
-        best = if (duration < best) duration else best;
+        const current = @as(f128, @floatFromInt(end - start)) / 1e6;
 
-        std.debug.print("\r{d:.6}\n", .{best});
+        if (current < best) {
+            best = current;
+            std.debug.print("{d:.4}ms, distinct = {d}\n", .{ best, distinct });
+        }
 
         allocator.free(data.data);
     }
