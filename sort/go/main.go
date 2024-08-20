@@ -39,7 +39,7 @@ func main() {
 
 		if current < best {
 			best = current
-			fmt.Print("\r", float64(best)/float64(1e6), "ms")
+			fmt.Println(float64(best)/float64(1e6), "ms")
 		}
 	}
 }

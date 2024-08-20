@@ -36,9 +36,12 @@ public class Main {
             long start = System.nanoTime();
             testRun(data);
             long end = System.nanoTime();
-
-            best = Math.min(best, (double)(end - start) / 1E6);
-            System.out.print("\r" + best);
+            
+            double current = (double)(end - start) / 1E6;
+            if (current < best) {
+                best = current;
+                System.out.println(best + "ms");
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ int main() {
 
         if (time < best) {
             best = time;
-            cout << "\r" << best / 1e6 << "ms";
+            cout << best / 1e6 << "ms" << endl;
         }
 
         testCleanup(data);

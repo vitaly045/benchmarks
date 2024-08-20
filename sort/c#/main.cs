@@ -39,7 +39,7 @@ namespace main {
 
                 if (watch.Elapsed.CompareTo(best) < 0) {
                     best = watch.Elapsed;
-                    Console.Write("\r" + best);
+                    Console.WriteLine(best.TotalMicroseconds / 1000.0 + "ms");
                 }
             }
         }

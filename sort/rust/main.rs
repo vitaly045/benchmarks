@@ -32,7 +32,7 @@ fn main() {
 
         if current < best {
             best = current;
-            println!("{:?}", (best as f64) / 1000000.0);
+            println!("{:?}ms", (best as f64) / 1000000.0);
         }
     }
 }
