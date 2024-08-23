@@ -20,7 +20,8 @@ fn test_init() -> TestData {
 
 fn test_run(test: &TestData) {
     for i in 0..CAPACITY {
-        let _ = test.data.binary_search(&test.data[i]);
+        let key = test.data[i];
+        let _ = test.data.binary_search(&key);
     }
 }
 

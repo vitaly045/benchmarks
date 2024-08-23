@@ -26,10 +26,19 @@ func testInit() TestData {
 	return TestData{data}
 }
 
-func testRun(test *TestData) {
+func testRunSlicesPackage(test *TestData) {
 	for i := 0; i < capacity; i++ {
 		_, contains := slices.BinarySearch(test.data, test.data[i])
 		if !contains {
+			panic("Value is not found: " + strconv.Itoa(test.data[i]))
+		}
+	}
+}
+
+func testRunSortPackage(test *TestData) {
+	for i := 0; i < capacity; i++ {
+		index := sort.SearchInts(test.data, test.data[i])
+		if test.data[index] != test.data[i] {
 			panic("Value is not found: " + strconv.Itoa(test.data[i]))
 		}
 	}
@@ -41,7 +50,7 @@ func main() {
 	for k := 0; k < experiments; k++ {
 		testData := testInit()
 		startAt := time.Now()
-		testRun(&testData)
+		testRunSortPackage(&testData)
 		endAt := time.Now()
 
 		current := endAt.Sub(startAt).Nanoseconds()
